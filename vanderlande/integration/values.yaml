@@ -1,0 +1,83 @@
+image:
+  # Using no / at the end, only 1 docker container used
+  repository: "vicentral.azurecr.io/vanderlande/wpp/fm_ssu/stock-supplier"
+  tag: "3.1.0-20200615125355.6"
+  pullSecret: "default-docker-registry"
+
+# Override value to ensure the naming is intact
+fullnameOverride: stock-supplier
+
+ 
+# Override for database settings dependency
+postgresql:
+  enabled: false
+  fullnameOverride: stock-supplier-postgres
+  persistence:
+    enabled: false
+    storageClass: default
+
+ingress:
+  enabled: true
+  host: vi-integration-1.westeurope.cloudapp.azure.com
+
+kafka:
+  broker: kafka.production:9092
+    
+services:
+  url:
+    adaptoLoadingMock: https://vi-integration-1.westeurope.cloudapp.azure.com/adaptoloadingmock/api
+    stockBroker: https://stock-broker.production/stock-broker/api
+    consignmentPlanner: https://vi-integration-1.westeurope.cloudapp.azure.com/consignment-planner/api
+
+processareas: |
+  - processAreaId: '440ddf13-c01e-4119-937e-7371863e5441'
+    processAreaName: 'Decanting'
+    processAreaType: 'Decanting'
+    consumptionAndProvision: 'coupled'
+    processDomainService: 'stock-supplier'
+  - processAreaId: '565b709b-f2d2-4148-a358-fa812899e346'
+    processAreaName: 'Adapto Storage'
+    processAreaType: 'Adapto'
+    consumptionAndProvision: 'decoupled'
+    processDomainService: 'stock-supplier'
+  - processAreaId: '4a2bc1a3-baae-42fa-9c45-0680e819b4cb'
+    processAreaName: 'goods-to-picker'
+    processAreaType: 'GTP'
+    consumptionAndProvision: 'coupled'
+    processDomainService: 'stock-supplier'
+  - processAreaId: '85feef84-6991-46ac-b31c-48bc992cef9e'
+    processAreaName: 'palletiser'
+    processAreaType: 'Palletiser'
+    consumptionAndProvision: 'coupled'
+    processDomainService: 'stock-supplier'
+  - processAreaId: '6fa34787-d85c-49ef-826e-6253a8c12646'
+    processAreaName: 'allocation'
+    processAreaType: 'Allocation'
+    consumptionAndProvision: 'decoupled'
+    processDomainService: 'stock-allocator'
+  - processAreaId: '4e9aa42f-78fb-4b4d-82b8-e98dd3e60b4b'
+    processAreaName: 'Package Finalizer'
+    processAreaType: 'Package Finalizer'
+    consumptionAndProvision: 'decoupled'
+    processDomainService: 'Package Finalizer'
+  - processAreaId: 'ec527f8f-0af9-4117-8af3-2e27c7ec4ffc'
+    processAreaName: 'Clearing'
+    processAreaType: 'Clearing'
+    consumptionAndProvision: 'coupled'
+    processDomainService: 'Clearing'
+global:
+  certificates:
+    enabled: true
+  database:
+    type: oracle
+
+certificates:
+  loadAdditionalRoots: false # default is "false" (Azure), for OnPremise switch to "true"
+  
+lost-items-publisher:
+  vanderlande:
+    scheduler:
+      eventPublisher:
+        enabled: true
+        resignTime: 0   # Units in Hours (decimal values are accepted only if Oracle is used)
+        cron: "0 */2 * ? * *"  # This means the check for every two minute
