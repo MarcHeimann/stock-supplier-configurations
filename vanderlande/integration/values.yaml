@@ -10,10 +10,8 @@ fullnameOverride: stock-supplier
  
 # Override for database settings dependency
 postgresql:
-  enabled: false
-  fullnameOverride: stock-supplier-postgres
+  enabled: true
   persistence:
-    enabled: false
     storageClass: default
 
 ingress:
