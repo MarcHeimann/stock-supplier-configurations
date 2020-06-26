@@ -4,6 +4,9 @@
 
 replicaCount: 1
 
+Release
+  Name: stocksupplier-stock-supplier
+
 image:
   repository: vicentral.azurecr.io/vanderlande/wpp/fm_ssu/stock-supplier
   tag: ${#triggerResolvedArtifactByType('docker/image')['version']}
