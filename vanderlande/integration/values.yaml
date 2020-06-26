@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: vicentral.azurecr.io/vanderlande/wpp/fm_ssu/stock-supplier
-  tag: ${"${#triggerResolvedArtifactByType('docker/image')['version']}"}
+  tag: ${"${#triggerResolvedArtifactByType("docker/image")["version"]}"}
   pullPolicy: IfNotPresent
   pullSecret: default-docker-registry
 
