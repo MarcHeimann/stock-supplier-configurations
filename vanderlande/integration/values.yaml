@@ -4,7 +4,7 @@
 
 replicaCount: 1
 
-Release
+Release:
   Name: stocksupplier-stock-supplier
 
 image:
