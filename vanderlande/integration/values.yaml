@@ -1,31 +1,22 @@
+# Default values for stock-supplier.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
 image:
-  # Using no / at the end, only 1 docker container used
-  repository: "vicentral.azurecr.io/vanderlande/wpp/fm_ssu/stock-supplier"
-  tag: "3.1.0-20200615125355.6"
-  pullSecret: "default-docker-registry"
-
-# Override value to ensure the naming is intact
-fullnameOverride: stock-supplier
-
- 
-# Override for database settings dependency
-postgresql:
-  enabled: true
-  persistence:
-    storageClass: default
-
-ingress:
-  enabled: true
-  host: vi-integration-1.westeurope.cloudapp.azure.com
+  repository: ${docker.registry}/vanderlande/wpp/${service.shortName}/${service.technicalName}
+  tag: ${project.version}
+  pullPolicy: IfNotPresent
+  pullSecret: default-docker-registry
 
 kafka:
   broker: kafka.production:9092
-    
 services:
   url:
-    adaptoLoadingMock: https://vi-integration-1.westeurope.cloudapp.azure.com/adaptoloadingmock/api
-    stockBroker: https://stock-broker.production/stock-broker/api
-    consignmentPlanner: https://vi-integration-1.westeurope.cloudapp.azure.com/consignment-planner/api
+    adaptoLoadingMock: http://wiremock.pocket-sorter.svc.cluster.local/adapto-loading-mock/api
+    stockBroker: http://wiremock.pocket-sorter.svc.cluster.local/stock-broker/api
+    consignmentPlanner: http://wiremock.pocket-sorter.svc.cluster.local/consignment-planner/api
 
 processareas: |
   - processAreaId: '440ddf13-c01e-4119-937e-7371863e5441'
@@ -33,23 +24,23 @@ processareas: |
     processAreaType: 'Decanting'
     consumptionAndProvision: 'coupled'
     processDomainService: 'stock-supplier'
-  - processAreaId: '565b709b-f2d2-4148-a358-fa812899e346'
+  - processAreaId: '617918a6-b819-11e8-96f8-529269fb1459'
     processAreaName: 'Adapto Storage'
     processAreaType: 'Adapto'
     consumptionAndProvision: 'decoupled'
     processDomainService: 'stock-supplier'
-  - processAreaId: '4a2bc1a3-baae-42fa-9c45-0680e819b4cb'
-    processAreaName: 'goods-to-picker'
+  - processAreaId: '7b92d218-b819-11e8-96f8-529269fb1459'
+    processAreaName: 'GTP1'
     processAreaType: 'GTP'
     consumptionAndProvision: 'coupled'
     processDomainService: 'stock-supplier'
   - processAreaId: '85feef84-6991-46ac-b31c-48bc992cef9e'
-    processAreaName: 'palletiser'
+    processAreaName: 'Palletiser'
     processAreaType: 'Palletiser'
     consumptionAndProvision: 'coupled'
     processDomainService: 'stock-supplier'
   - processAreaId: '6fa34787-d85c-49ef-826e-6253a8c12646'
-    processAreaName: 'allocation'
+    processAreaName: 'Allocation'
     processAreaType: 'Allocation'
     consumptionAndProvision: 'decoupled'
     processDomainService: 'stock-allocator'
@@ -62,20 +53,91 @@ processareas: |
     processAreaName: 'Clearing'
     processAreaType: 'Clearing'
     consumptionAndProvision: 'coupled'
-    processDomainService: 'Clearing'
+    processDomainService: 'stock-supplier'
+
+dataRetention:
+  cleanerDisabled: false
+  cleanerInterval: "0 0 3 * * *"
+  minutesToKeepData : 4320
+  maxRemovePerRun: 1000
+
+service:
+  type: ClusterIP
+  port: 443
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+  path: /stock-supplier
+  host: team2-vanderlande.westeurope.cloudapp.azure.com
+  tls: []
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+nameOverride: ""
+fullnameOverride: ""
+
+database:
+  # Username and password for postgresql have to be aligned with the one in the postgresql section
+  # username: stocksupplier
+  username: STOCKSUPPLIER
+  # password: stocksupplier
+  password: STOCKSUPPLIER
+
+turing-polling-publisher:
+  enabled: true
+
+lost-items-publisher:
+  enabled: true
+
+postgresql:
+  # even if postgresql is selected in the global database configuration, it must also be enabled here
+  # enabled: true
+  enabled: true
+  #fullnameOverride: stock-supplier-postgres
+  nameOverride: stock-supplier-postgres
+  postgresUser: stocksupplier
+  postgresPassword: stocksupplier
+  postgresDatabase: stocksupplier
+  persistence:
+    persistence.size: 1Gi
+    persistence.storageClass: rook-ceph-block
+
 global:
   certificates:
     enabled: true
   database:
-    type: oracle
+    # The database type to use
+    type: postgresql
+    # type: oracle
+    # The jdbc url to use. In case of postgresql use
+    url: "jdbc:postgresql://stock-supplier-postgres:5432/stocksupplier"
+    # url: "jdbc:oracle:thin:@${TNS_ALIAS}?TNS_ADMIN=/etc/oracle"
+    pwSecret:
+      name: "{{ .Release.Name }}-db-auth"
+      key: password
+    userSecret:
+      name: "{{ .Release.Name }}-db-auth"
+      key: username
 
 certificates:
-  loadAdditionalRoots: false # default is "false" (Azure), for OnPremise switch to "true"
-  
-lost-items-publisher:
-  vanderlande:
-    scheduler:
-      eventPublisher:
-        enabled: true
-        resignTime: 0   # Units in Hours (decimal values are accepted only if Oracle is used)
-        cron: "0 */2 * ? * *"  # This means the check for every two minute
+  loadAdditionalRoots: false
