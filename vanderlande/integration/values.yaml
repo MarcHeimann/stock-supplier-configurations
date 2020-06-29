@@ -98,10 +98,8 @@ fullnameOverride: ""
 
 database:
   # Username and password for postgresql have to be aligned with the one in the postgresql section
-  # username: stocksupplier
-  username: STOCKSUPPLIER
-  # password: stocksupplier
-  password: STOCKSUPPLIER
+  username: stocksupplier
+  password: stocksupplier
 
 turing-polling-publisher:
   enabled: true
