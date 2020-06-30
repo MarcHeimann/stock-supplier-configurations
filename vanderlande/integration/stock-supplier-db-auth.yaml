@@ -5,5 +5,5 @@ metadata:
   namespace: production
 type: Opaque
 data:
-  username: c3RvY2tzdXBwbGllcg2==
+  username: c3RvY2tzdXBwbGllcg==
   password: c3RvY2tzdXBwbGllcg==
