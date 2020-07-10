@@ -1,7 +1,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: stock-supplier-lost-items-publisher-v000
+  name: stock-supplier-lost-items-publisher
   namespace: production
   annotations:
 data:
