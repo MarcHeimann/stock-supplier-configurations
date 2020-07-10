@@ -1,0 +1,80 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: stock-supplier
+  namespace: production
+  labels:
+    release: stock-supplier
+data:
+  application-prod.yaml: |-
+    opentracing:
+      jaeger:
+        enabled: true
+        udp-sender:
+          host: jaeger-agent.monitoring-system
+          port: 6831
+    vanderlande:
+      kafka:
+        broker-addresses: kafka.production:9092
+        topic: systemevent
+      services:
+        url:
+          adaptoloadingmock: http://wiremock.pocket-sorter.svc.cluster.local/adapto-loading-mock/api
+          stock-broker: http://wiremock.pocket-sorter.svc.cluster.local/stock-broker/api
+          consignment-planner: http://wiremock.pocket-sorter.svc.cluster.local/consignment-planner/api
+      processareas:
+         - processAreaId: '440ddf13-c01e-4119-937e-7371863e5441'
+           processAreaName: 'Decanting'
+           processAreaType: 'Decanting'
+           consumptionAndProvision: 'coupled'
+           processDomainService: 'stock-supplier'
+         - processAreaId: '617918a6-b819-11e8-96f8-529269fb1459'
+           processAreaName: 'Adapto Storage'
+           processAreaType: 'Adapto'
+           consumptionAndProvision: 'decoupled'
+           processDomainService: 'stock-supplier'
+         - processAreaId: '7b92d218-b819-11e8-96f8-529269fb1459'
+           processAreaName: 'GTP1'
+           processAreaType: 'GTP'
+           consumptionAndProvision: 'coupled'
+           processDomainService: 'stock-supplier'
+         - processAreaId: '85feef84-6991-46ac-b31c-48bc992cef9e'
+           processAreaName: 'Palletiser'
+           processAreaType: 'Palletiser'
+           consumptionAndProvision: 'coupled'
+           processDomainService: 'stock-supplier'
+         - processAreaId: '6fa34787-d85c-49ef-826e-6253a8c12646'
+           processAreaName: 'Allocation'
+           processAreaType: 'Allocation'
+           consumptionAndProvision: 'decoupled'
+           processDomainService: 'stock-allocator'
+         - processAreaId: '4e9aa42f-78fb-4b4d-82b8-e98dd3e60b4b'
+           processAreaName: 'Package Finalizer'
+           processAreaType: 'Package Finalizer'
+           consumptionAndProvision: 'decoupled'
+           processDomainService: 'Package Finalizer'
+         - processAreaId: 'ec527f8f-0af9-4117-8af3-2e27c7ec4ffc'
+           processAreaName: 'Clearing'
+           processAreaType: 'Clearing'
+           consumptionAndProvision: 'coupled'
+           processDomainService: 'stock-supplier'
+         
+      dataRetention:
+        cleanerDisabled: false
+        cleanerInterval: 0 0 3 * * *
+        minutesToKeepData: 4320
+        maxRemovePerRun: 1000
+      scheduler:
+        data-cleanup:
+          enabled: true
+          retentionTime: 72
+          cron: 0 0 3 * * *
+    server:
+      servlet:
+        context-path: /stock-supplier
+      ssl:
+        enable:  true
+        key-store-type:  PKCS12
+        trust-store-type: JKS
+        key-store: /etc/x509/keystore/keystore.p12
+        trust-store: file:/etc/x509/keystore/truststore.jks
