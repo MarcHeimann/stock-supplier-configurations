@@ -1,0 +1,22 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: stock-supplier-turing-polling-publisher-v001
+  namespace: production
+  labels:
+    release: stock-supplier
+data:
+  application.yaml: |-
+    spring:
+      kafka:
+        bootstrap-servers: kafka.production:9092
+    opentracing:
+      jaeger:
+        enabled: true
+        udp-sender:
+          host: jaeger-agent.monitoring-system
+          port: 6831
+    vanderlande:
+      polling-publisher:
+        topic: systemevent
+        polling-interval: 100
