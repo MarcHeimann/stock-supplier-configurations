@@ -45,17 +45,6 @@ affinity: {}
 nameOverride: ""
 fullnameOverride: ""
 
-database:
-  # Username and password for postgresql have to be aligned with the one in the postgresql section
-  username: stocksupplier
-  password: stocksupplier
-
-turing-polling-publisher:
-  enabled: true
-
-lost-items-publisher:
-  enabled: true
-
 postgresql:
   # even if postgresql is selected in the global database configuration, it must also be enabled here
   # enabled: true
