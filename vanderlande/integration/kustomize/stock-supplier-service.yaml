@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-supplier
+  namespace: production
+
+$patch: delete
