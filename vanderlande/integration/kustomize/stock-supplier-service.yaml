@@ -1,7 +1,30 @@
+$patch: delete
 apiVersion: v1
 kind: Service
 metadata:
   name: stock-supplier
   namespace: production
 
+---
 $patch: delete
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-supplier-postgres
+  namespace: production
+
+---
+$patch: delete
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-supplier-lost-items-publisher
+  namespace: production
+
+---
+$patch: delete
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-supplier-turing-polling-publisher
+  namespace: production
