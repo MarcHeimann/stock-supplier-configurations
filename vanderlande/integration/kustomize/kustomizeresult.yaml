@@ -80,7 +80,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  postgres-password: c3RvY2tzdXBwbGllcgffgg
+  postgres-password: c3RvY2tzdXBwbGllcg==
 kind: Secret
 metadata:
   labels:
