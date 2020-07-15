@@ -1,2 +1,4 @@
 resources:
 - helmresult.yaml
+patchesStrategicMerge:
+- stock-supplier-service.yaml
