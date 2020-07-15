@@ -100,27 +100,6 @@ kind: Secret
 metadata:
   name: stock-supplier-db-auth
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app.kubernetes.io/instance: stock-supplier
-    app.kubernetes.io/managed-by: Tiller
-    app.kubernetes.io/name: turing-polling-publisher
-    app.kubernetes.io/version: 7.8.7
-    helm.sh/chart: turing-polling-publisher-7.8.7
-  name: stock-supplier-turing-polling-publisher
-spec:
-  ports:
-  - name: http
-    port: 80
-    protocol: TCP
-    targetPort: http
-  selector:
-    app.kubernetes.io/instance: stock-supplier
-    app.kubernetes.io/name: turing-polling-publisher
-  type: ClusterIP
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
