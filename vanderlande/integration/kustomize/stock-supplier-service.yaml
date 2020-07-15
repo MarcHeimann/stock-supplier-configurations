@@ -21,3 +21,9 @@ metadata:
   name: stock-supplier-lost-items-publisher
 
 ---
+$patch: delete
+apiVersion: v1
+kind: Service
+  name: stock-supplier-turing-polling-publisher
+
+---
