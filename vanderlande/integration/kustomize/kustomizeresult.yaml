@@ -106,27 +106,6 @@ metadata:
   labels:
     app.kubernetes.io/instance: stock-supplier
     app.kubernetes.io/managed-by: Tiller
-    app.kubernetes.io/name: lost-items-publisher
-    app.kubernetes.io/version: 1.0.0-20200326092256.5
-    helm.sh/chart: lost-items-publisher-1.0.0-20200326092256.5
-  name: stock-supplier-lost-items-publisher
-spec:
-  ports:
-  - name: http
-    port: 80
-    protocol: TCP
-    targetPort: http
-  selector:
-    app.kubernetes.io/instance: stock-supplier
-    app.kubernetes.io/name: lost-items-publisher
-  type: ClusterIP
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app.kubernetes.io/instance: stock-supplier
-    app.kubernetes.io/managed-by: Tiller
     app.kubernetes.io/name: turing-polling-publisher
     app.kubernetes.io/version: 7.8.7
     helm.sh/chart: turing-polling-publisher-7.8.7
