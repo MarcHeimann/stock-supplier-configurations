@@ -1,4 +1,2 @@
 resources:
 - helmresult.yaml
-patchesStrategicMerge:
-- secret.yaml
