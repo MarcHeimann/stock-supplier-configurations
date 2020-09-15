@@ -1,4 +1,4 @@
 resources:
-- helmresult.yaml
+- helmresult-${trigger['tag']}.yaml
 patchesStrategicMerge:
 - stock-supplier-service.yaml
